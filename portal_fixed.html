@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BrightPath HR System</title>
+<style>
+  :root{--soot:#2D3536;--moss:#697C70;--euc:#98AA9D;--mist:#B3C9D6;--plaster:#F2EFE2;--tint:color-mix(in srgb,var(--mist) 30%,#fff);--line:color-mix(in srgb,var(--euc) 45%,var(--plaster));--muted:color-mix(in srgb,var(--soot) 78%,var(--plaster));--serif:"Cormorant Garamond","Iowan Old Style","Palatino Linotype",Georgia,serif}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--plaster);color:var(--soot);line-height:1.55}
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--moss);outline-offset:2px}
+  header a:focus-visible,.hero input:focus-visible,.hero button:focus-visible{outline-color:var(--mist)}
+  header{background:var(--soot);color:var(--plaster);position:sticky;top:0;z-index:5}
+  .nav{max-width:1100px;margin:0 auto;padding:.85rem 1.25rem;display:flex;align-items:center;gap:1.5rem}
+  .logo{font-family:var(--serif);font-weight:600;font-size:1.7rem;color:var(--plaster);text-decoration:none;line-height:1}
+  .logo span{color:var(--euc);font-style:italic}
+  .nav nav{display:flex;gap:1.5rem;margin:0 auto}
+  .nav nav a{color:var(--mist);text-decoration:none;font-weight:500}
+  .nav nav a:hover{color:#fff}
+  .btn,.refer-button,.refresh-button{display:inline-block;border:0;border-radius:999px;padding:.65rem 1.2rem;background:var(--euc);color:var(--soot);text-decoration:none;font:inherit;font-weight:650;cursor:pointer;transition:background .15s}
+  .btn:hover,.refresh-button:hover{background:var(--mist)}
+  .refresh-button:disabled{opacity:.6;cursor:wait}
+  .hero{background:linear-gradient(135deg,var(--soot),color-mix(in srgb,var(--soot) 68%,var(--moss)));color:var(--plaster);padding:4.5rem 1.25rem 5rem;text-align:center}
+  .hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(2.4rem,6vw,3.8rem);line-height:1.1;margin:0 auto .8rem;max-width:18ch}
+  .hero p{color:var(--mist);font-size:1.1rem;margin:0 auto 2rem;max-width:58ch}
+  .search{display:flex;flex-wrap:wrap;gap:.6rem;max-width:720px;margin:0 auto;background:rgba(242,239,226,.12);padding:.6rem;border-radius:999px}
+  .search input{flex:1 1 180px;min-width:0;border:0;border-radius:999px;padding:.85rem 1.2rem;font:inherit;background:var(--plaster);color:var(--soot)}
+  .search .btn{padding:.85rem 1.8rem}
+  main{max-width:1100px;margin:0 auto;padding:0 1.25rem 3rem}
+  h2.section-title{font-family:var(--serif);font-weight:600;color:var(--soot);font-size:2rem;margin:3rem 0 .3rem}
+  p.welcome{color:var(--muted);margin:0 0 1.5rem;max-width:60ch}
+  .buttons,.job-list,.categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}
+  .card,.job-card,.cat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:1.4rem;color:inherit;text-decoration:none;transition:border-color .15s,box-shadow .15s}
+  .card{display:block}
+  .card:hover,.cat:hover{border-color:var(--moss);box-shadow:0 8px 22px rgba(45,53,54,.1)}
+  .card h2{font-family:var(--serif);margin:0 0 .3rem;color:var(--soot);font-size:1.5rem}
+  .card p{margin:0;color:var(--muted)}
+  .buttons{margin-top:-2.6rem;position:relative}
+  .categories{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+  .cat{font:inherit;text-align:left;cursor:pointer;display:flex;align-items:center;gap:.75rem;padding:1rem;color:var(--soot)}
+  .cat .ic{width:2.4rem;height:2.4rem;border-radius:10px;background:var(--euc);color:var(--soot);display:grid;place-items:center;font-weight:800}
+  .cat small{display:block;color:var(--muted)}
+  .cat[aria-pressed=true]{border-color:var(--moss);background:var(--tint)}
+  .job-card{display:flex;flex-direction:column;align-items:flex-start;gap:.7rem;background:var(--tint)}
+  .job-card:hover{border-color:var(--moss);box-shadow:0 8px 22px rgba(45,53,54,.12)}
+  .job-card h3{font-family:var(--serif);margin:0;color:var(--soot);font-size:1.55rem;line-height:1.15}
+  .job-card p{margin:0;color:var(--muted)}
+  .job-card .department{font-size:.95rem}
+  .badge{display:inline-block;background:#fff;border:1px solid var(--euc);color:var(--soot);border-radius:999px;padding:.15rem .7rem;font-size:.85rem;font-weight:600}
+  .tag{color:var(--muted);font-size:.85rem}
+  .job-card .refer-button{margin-top:auto;background:var(--soot);color:var(--plaster)}
+  .job-card .refer-button:hover{background:var(--euc);color:var(--soot)}
+  .job-status{color:var(--muted);margin:.5rem 0 1rem}
+  .job-error{color:#a61b1b;background:#fdecec;border:1px solid #f2b8b8;border-radius:10px;padding:.7rem 1rem}
+  .job-empty{background:#fff;border:1px dashed var(--euc);border-radius:14px;padding:1.25rem;color:var(--muted)}
+  .job-actions{margin-top:1.25rem}
+  .spinner{display:inline-block;width:.9em;height:.9em;border:2px solid var(--line);border-top-color:var(--moss);border-radius:50%;vertical-align:-.1em;margin-right:.5rem;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media(prefers-reduced-motion:reduce){.spinner{animation:none}html{scroll-behavior:auto}}
+  @media(max-width:700px){.nav nav{display:none}.nav{justify-content:space-between}.hero{padding:3rem 1rem 4rem}.search{border-radius:22px}.buttons,.job-list{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <a class="logo" href="#top">Bright<span>Path</span></a>
+    <nav aria-label="Main">
+      <a href="#top">Home</a>
+      <a href="#services">Services</a>
+      <a href="#open-positions-section">Open Positions</a>
+    </nav>
+    <a class="btn" id="nav-chatbot" href="#">Ask HR Assistant</a>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <h1>BrightPath HR System</h1>
+  <p class="welcome">Welcome. Choose a service to submit a leave request, ask the HR Assistant about company policies and benefits, or refer a candidate for an open position.</p>
+  <form class="search" id="search-form" role="search" aria-label="Search open positions">
+    <input type="search" id="search-input" placeholder="Search open positions by title or department" aria-label="Search open positions">
+    <button class="btn" type="submit">Search</button>
+  </form>
+</section>
+
+<main>
+  <div class="buttons" id="services">
+    <a class="card" id="leave-link" href="#"><h2>Leave Request</h2><p>Submit a leave request to HR.</p></a>
+    <a class="card" id="chatbot-link" href="#"><h2>HR Chatbot</h2><p>Ask questions about the Employee Handbook.</p></a>
+  </div>
+
+  <section id="open-positions-section" aria-labelledby="open-positions-heading">
+    <h2 class="section-title" id="open-positions-heading">Open Positions</h2>
+    <p class="welcome">Explore current opportunities and refer someone who would be a great fit.</p>
+    <div id="categories" class="categories" aria-label="Filter by department" hidden></div>
+    <p id="open-positions-status" class="job-status" role="status" aria-live="polite"><span class="spinner"></span>Loading open positions...</p>
+    <div id="open-positions" class="job-list"></div>
+    <div class="job-actions"><button id="refresh-positions" class="refresh-button" type="button">Refresh positions</button></div>
+  </section>
+</main>
+<script>
+  /* ============================================================
+     PORTAL LINKS AND OPEN-POSITIONS WEBHOOK
+     ============================================================ */
+  const LEAVE_REQUEST_URL = "https://forms.gle/3GGSTRxnk2wzBNqg6";
+  const HR_CHATBOT_URL = "chatbot.html";
+  const OPEN_POSITIONS_WEBHOOK = "https://nourelkhatib7.app.n8n.cloud/webhook/open-positions";
+  /* ============================================================ */
+
+  document.getElementById("leave-link").href = LEAVE_REQUEST_URL;
+  document.getElementById("chatbot-link").href = HR_CHATBOT_URL;
+  document.getElementById("nav-chatbot").href = HR_CHATBOT_URL;
+
+  const positionsContainer = document.getElementById("open-positions");
+  const positionsStatus = document.getElementById("open-positions-status");
+  const refreshButton = document.getElementById("refresh-positions");
+  const categoriesBox = document.getElementById("categories");
+  const searchInput = document.getElementById("search-input");
+  let activeDept = "";
+  let totalJobs = 0;
+
+  function makeJobCard(job) {
+    const card = document.createElement("article");
+    card.className = "job-card";
+
+    const deptName = job.department || job.Department || "";
+    const badge = document.createElement("span");
+    badge.className = "badge";
+    badge.textContent = deptName || "Not specified";
+
+    const title = document.createElement("h3");
+    title.textContent = job.title || job["Job Title"] || "Untitled position";
+
+    const department = document.createElement("p");
+    department.className = "department";
+    department.textContent = "Department: " + (deptName || "Not specified");
+
+    card.append(badge, title, department);
+    if (job.jobId) {
+      const id = document.createElement("span");
+      id.className = "tag";
+      id.textContent = job.jobId;
+      card.appendChild(id);
+    }
+    card.dataset.dept = deptName;
+    card.dataset.search = (title.textContent + " " + deptName).toLowerCase();
+
+    // Read the referral URL even if the Google Sheets column/key uses
+    // a slightly different capitalization or spacing.
+    const referralKeys = [
+      "referralLink", "Referral Link", "referral_link", "referral link",
+      "ReferralLink", "referralUrl", "referralURL", "Referral URL",
+      "Referral Form URL", "Application Link", "Apply Link"
+    ];
+    const normalizedJob = {};
+    Object.keys(job || {}).forEach(key => {
+      normalizedJob[key.toLowerCase().replace(/[\s_-]/g, "")] = job[key];
+    });
+
+    let referralLink = "";
+    for (const key of referralKeys) {
+      const value = job?.[key] ?? normalizedJob[key.toLowerCase().replace(/[\s_-]/g, "")];
+      if (typeof value === "string" && value.trim()) {
+        referralLink = value.trim();
+        break;
+      }
+    }
+
+    if (referralLink) {
+      try {
+        // Add https:// if a URL was entered without a protocol.
+        if (!/^https?:\/\//i.test(referralLink)) {
+          referralLink = "https://" + referralLink;
+        }
+        const parsedUrl = new URL(referralLink);
+        if (parsedUrl.protocol === "https:" || parsedUrl.protocol === "http:") {
+          const button = document.createElement("a");
+          button.className = "refer-button";
+          button.textContent = "Refer a Candidate";
+          button.href = parsedUrl.href;
+          button.target = "_blank";
+          button.rel = "noopener noreferrer";
+          card.appendChild(button);
+        } else {
+          throw new Error("Unsupported referral URL protocol");
+        }
+      } catch (_) {
+        const message = document.createElement("p");
+        message.className = "department";
+        message.textContent = "Referral link is invalid. Please contact HR.";
+        card.appendChild(message);
+      }
+    } else {
+      const message = document.createElement("p");
+      message.className = "department";
+      message.textContent = "Referral link unavailable for this position.";
+      card.appendChild(message);
+    }
+
+    return card;
+  }
+
+  // Department filter chips, built from the jobs the webhook returned.
+  function buildCategories(jobs) {
+    categoriesBox.replaceChildren();
+    const counts = {};
+    jobs.forEach(j => { const d = j.department || j.Department; if (d) counts[d] = (counts[d] || 0) + 1; });
+    const names = Object.keys(counts);
+    categoriesBox.hidden = names.length < 2;
+    names.forEach(name => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "cat";
+      b.setAttribute("aria-pressed", "false");
+      const ic = document.createElement("span");
+      ic.className = "ic";
+      ic.textContent = name.charAt(0).toUpperCase();
+      const label = document.createElement("span");
+      label.textContent = name;
+      const small = document.createElement("small");
+      small.textContent = counts[name] + (counts[name] === 1 ? " position" : " positions");
+      label.appendChild(small);
+      b.append(ic, label);
+      b.addEventListener("click", () => {
+        activeDept = activeDept === name ? "" : name;
+        categoriesBox.querySelectorAll(".cat").forEach(c => c.setAttribute("aria-pressed", String(c === b && activeDept === name)));
+        applyFilter();
+      });
+      categoriesBox.appendChild(b);
+    });
+  }
+
+  function applyFilter() {
+    const q = searchInput.value.trim().toLowerCase();
+    let shown = 0;
+    positionsContainer.querySelectorAll(".job-card").forEach(card => {
+      const ok = (!activeDept || card.dataset.dept === activeDept) && (!q || card.dataset.search.includes(q));
+      card.hidden = !ok;
+      if (ok) shown++;
+    });
+    if (totalJobs) {
+      positionsStatus.textContent = (q || activeDept)
+        ? shown + " of " + totalJobs + " positions match your search."
+        : "Showing " + totalJobs + " open position" + (totalJobs === 1 ? "" : "s") + ".";
+    }
+  }
+
+  async function loadOpenPositions() {
+    positionsStatus.replaceChildren();
+    const sp = document.createElement("span");
+    sp.className = "spinner";
+    positionsStatus.append(sp, "Loading open positions...");
+    positionsStatus.classList.remove("job-error");
+    refreshButton.disabled = true;
+    positionsContainer.replaceChildren();
+    categoriesBox.hidden = true;
+    totalJobs = 0;
+
+    try {
+      const response = await fetch(OPEN_POSITIONS_WEBHOOK, { method: "GET" });
+      if (!response.ok) throw new Error("The positions service returned HTTP " + response.status);
+
+      const data = await response.json();
+      // Supports the expected { jobs: [...] } response and a direct array response.
+      const jobs = Array.isArray(data) ? data : (Array.isArray(data.jobs) ? data.jobs : []);
+
+      if (jobs.length === 0) {
+        positionsStatus.textContent = "There are currently no open positions.";
+        const empty = document.createElement("div");
+        empty.className = "job-empty";
+        empty.textContent = "Please check again later for new opportunities.";
+        positionsContainer.appendChild(empty);
+        return;
+      }
+
+      jobs.forEach(job => positionsContainer.appendChild(makeJobCard(job)));
+      totalJobs = jobs.length;
+      buildCategories(jobs);
+      applyFilter();
+    } catch (error) {
+      console.error("Unable to load open positions:", error);
+      positionsStatus.textContent = "Unable to load open positions. Please check your connection or try again.";
+      positionsStatus.classList.add("job-error");
+      const retry = document.createElement("button");
+      retry.type = "button";
+      retry.className = "refresh-button";
+      retry.textContent = "Try again";
+      retry.addEventListener("click", loadOpenPositions);
+      positionsContainer.appendChild(retry);
+    } finally {
+      refreshButton.disabled = false;
+    }
+  }
+
+  document.getElementById("search-form").addEventListener("submit", e => {
+    e.preventDefault();
+    applyFilter();
+    document.getElementById("open-positions-section").scrollIntoView();
+  });
+  searchInput.addEventListener("input", applyFilter);
+  refreshButton.addEventListener("click", loadOpenPositions);
+  document.addEventListener("DOMContentLoaded", loadOpenPositions);
+</script>
+</body>
+</html>
